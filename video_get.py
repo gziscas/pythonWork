@@ -12,6 +12,8 @@ import uuid
 import time
 from lxml import etree  
 
+# 2017.5.11 updated, using fixed UUID
+
 #mysql
 class mysqlVar: 
   db = None
@@ -34,7 +36,7 @@ g_codetype = sys.getfilesystemencoding()
 def openMysql():
     # 打开数据库连接
     #db = MySQLdb.connect("127.0.0.1","root","12345","jojodb", charset='utf8')
-    db = MySQLdb.connect("120.76.119.16","mess","mess1357)*^$","mess", charset='utf8')
+    db = MySQLdb.connect("119.23.68.93","mess","jojo$2904^sns","mess", charset='utf8')
 
     # 使用cursor()方法获取操作游标 
     cursor = db.cursor()  
@@ -80,7 +82,7 @@ def getVideo(picurl, new_url, url_name):
         return
         
     #抓取视频文件
-    videoreg = r'videoUrl=(.*?)?"'
+    videoreg = r'videoUrl=(.*?)"'
     videosre = re.compile(videoreg)
     videourl = re.findall(videosre, newhtml)
 
@@ -197,7 +199,7 @@ def checkUrl(fname):
 
 def insertArticleInfoMysql(picurl, title, url, fname):
     #sql = "insert into article_test(type, title, url, filename) values (%d, '%s', '%s','%s')" % (type, title, url, fname)
-    article_id  =  str(uuid.uuid4()).replace('-','')
+    article_id  =  '4d8a6539a888475e8a78e0c9a62d4d4d'
     article_title = title
     article_author = 'first video'
     release_time = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
