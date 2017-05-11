@@ -199,12 +199,12 @@ def checkUrl(fname):
 
 def insertArticleInfoMysql(picurl, title, url, fname):
     #sql = "insert into article_test(type, title, url, filename) values (%d, '%s', '%s','%s')" % (type, title, url, fname)
-    article_id  =  '4d8a6539a888475e8a78e0c9a62d4d4d'
+    article_id  =  str(uuid.uuid4()).replace('-','')
     article_title = title
     article_author = 'first video'
     release_time = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
     article_summary = title
-    article_column_id = str(uuid.uuid4()).replace('-','')
+    article_column_id = '4d8a6539a888475e8a78e0c9a62d4d4d'
     is_released = 1
     release_user = 'Python Spider'
     article_type = 4
