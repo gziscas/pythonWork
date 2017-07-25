@@ -12,7 +12,8 @@ import uuid
 import time
 from lxml import etree  
 
-# 2017.5.11 updated, using fixed UUID
+#2017.7.25    
+#      针对改版网站的抓取
 
 #mysql
 class mysqlVar: 
@@ -53,53 +54,75 @@ def closeMysql():
 def getHtml(url):
     page = urllib.urlopen(url)
     html = page.read()
+
     return html
 
 def getNews(html):
     #reg = r'<a href="(.*?)">(.*?)</a>(.*?)</span></div>'
-    reg = r'[\d\D]*?data-src="(.*?)"/>[\d\D]*?<a href="(.*?)">(.*?)</a> <span>(.*?)</span></div>'
+    #原版第一视频今日头条首页正则表达式
+    #reg = r'[\d\D]*?data-src="(.*?)"/>[\d\D]*?<a href="(.*?)">(.*?)</a> <span>(.*?)</span></div>'
  
+    #新版第一视频正则表达式
+    #提取链接和标题
+    #reg = r'<div class="tit">[\s\S]*?<a target="_blank" href="(.*?)">(.*?)</a>[\s\S]*?</div>'
+
+    #提取链接和封面图
+    #reg = r'<div class="pic">[\s\S]*?<img src="(.*?)" >[\s\S]*?</div>'
+
+    #提取链接、标题和封面图,包含空格和换行符
+    #           换行符         pic         换行符      src          换行符    div   换行符       tit    
+    reg = r'<li>[\s\S]*?<div class="pic">[\s\S]*?<img src="(.*?)" >[\s\S]*?</div>[\s\S]*?<div class="tit">[\s\S]*?<a target="_blank" href="(.*?)">(.*?)</a>[\s\S]*?</div>'
+
     newsre = re.compile(reg)
     newslist = re.findall(newsre, html)
     #抓取3个分组：主题配图、链接网址、title
     x=0
     for newurl in newslist:
-      
        num = len(newurl)
-       if num > 1:
-          pic = newurl[0]
-          url = newurl[1]
+       if num >= 1:
+          pic = newurl[0]          
+          url = "http://www.v1.cn" + newurl[1]
           name = newurl[2]
-          #print x,  url, name
+
+          print x, url, name, pic
+          #print x, newurl[0], newurl[1], newurl[2]
 
           getVideo(pic, url, name)
           x = x+1
 
+          num =  len(newslist) 
+          print x, len(newslist)
+
+          if x >= num-1:
+              return
+
+
 def getVideo(picurl, new_url, url_name):
+    
     newhtml = getHtml(new_url)
 
     if newhtml is None:
         return
-        
-    #抓取视频文件
+
+     #抓取视频文件
     videoreg = r'videoUrl=(.*?)"'
     videosre = re.compile(videoreg)
     videourl = re.findall(videosre, newhtml)
-
+    
     num = len(videourl)
 
     if num > 0:
        url = videourl[0]
+       print url
 
        fname = os.path.basename(url)
        tmp = checkUrl(fname)
        if tmp == 0:
           Video_Data.append([picurl, url, url_name])        
           insertVideoInfo(picurl, url_name, fname)
-
           insertArticleInfoMysql(picurl, url_name, url, fname)
-
-
+       else:
+           print "已下载", fname
  
 def getImg(html):
     reg = r'src="(.+?\.jpg)" pic_ext'
